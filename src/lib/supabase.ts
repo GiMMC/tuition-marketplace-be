@@ -7,4 +7,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
   console.warn('Supabase URL or Service Key is missing. Storage functionality might fail.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseServiceKey);
+export const supabase = createClient(
+  supabaseUrl || 'https://dummy.supabase.co',
+  supabaseServiceKey || 'dummy_key'
+);
