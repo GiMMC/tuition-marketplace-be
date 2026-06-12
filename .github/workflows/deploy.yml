@@ -45,3 +45,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Deploy to Server
+        if: github.event_name == 'push'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEV_SERVER_HOST }}
+          username: ${{ secrets.DEV_SERVER_USER }}
+          password: ${{ secrets.DEV_SERVER_PASSWORD }}
+          script: |
+            cd /opt/app/tuition-marketplace-be
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/tuition-marketplace-be:latest
+            docker compose up -d --remove-orphans
+            docker image prune -f
