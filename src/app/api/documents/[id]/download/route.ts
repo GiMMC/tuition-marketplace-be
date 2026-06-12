@@ -39,7 +39,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       if (user.role === 'PARENT' && document.case.parentId === user.id) {
         isAuthorized = true;
       } else if (user.role === 'TUTOR' && user.tutorProfile) {
-        const isInvited = document.case.caseInvitations.some(inv => inv.tutorProfileId === user.tutorProfile!.id);
+        const isInvited = document.case.caseInvitations.some((inv: any) => inv.tutorProfileId === user.tutorProfile!.id);
         if (isInvited) isAuthorized = true;
       }
     }

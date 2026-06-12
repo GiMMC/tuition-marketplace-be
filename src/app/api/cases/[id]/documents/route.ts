@@ -26,7 +26,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     if (user.role === 'PARENT' && caseItem.parentId === user.id) {
       isAuthorized = true;
     } else if (user.role === 'TUTOR' && user.tutorProfile) {
-      const isInvited = caseItem.caseInvitations.some(inv => inv.tutorProfileId === user.tutorProfile!.id);
+      const isInvited = caseItem.caseInvitations.some((inv: any) => inv.tutorProfileId === user.tutorProfile!.id);
       if (isInvited) isAuthorized = true;
     }
 
@@ -95,7 +95,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     if (user.role === 'PARENT' && caseItem.parentId === user.id) {
       isAuthorized = true;
     } else if (user.role === 'TUTOR' && user.tutorProfile) {
-      const isInvited = caseItem.caseInvitations.some(inv => inv.tutorProfileId === user.tutorProfile!.id);
+      const isInvited = caseItem.caseInvitations.some((inv: any) => inv.tutorProfileId === user.tutorProfile!.id);
       if (isInvited) isAuthorized = true;
     }
 
