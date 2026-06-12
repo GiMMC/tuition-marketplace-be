@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PARENT
+  TUTOR
+}
+
+enum CaseStatus {
+  OPEN
+  MATCHED
+  CLOSED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tutorProfile TutorProfile?
+  cases        Case[]        @relation("ParentCases")
+}
+
+model TutorProfile {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName    String
+  qualifications String?
+  experiences    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  documents        Document[]
+  caseInvitations  CaseInvitation[]
+}
+
+model Case {
+  id            String     @id @default(uuid())
+  title         String
+  subject       String
+  level         String
+  location      String?
+  budgetPerHour Float?
+  status        CaseStatus @default(OPEN)
+  parentId      String
+  parent        User       @relation("ParentCases", fields: [parentId], references: [id], onDelete: Cascade)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  documents       Document[]
+  caseInvitations CaseInvitation[]
+}
+
+model CaseInvitation {
+  id             String       @id @default(uuid())
+  caseId         String
+  case           Case         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  tutorProfileId String
+  tutorProfile   TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([caseId, tutorProfileId])
+}
+
+model Document {
+  id             String        @id @default(uuid())
+  filename       String
+  originalName   String
+  mimeType       String
+  size           Int
+  uploadedById   String
+  caseId         String?
+  case           Case?         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  tutorProfileId String?
+  tutorProfile   TutorProfile? @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
