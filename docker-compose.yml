@@ -27,6 +27,8 @@ services:
     restart: always
     ports:
       - "5001:3000"
+    environment:
+      - SECURE_COOKIES=false
     env_file:
       - .env
     depends_on:
