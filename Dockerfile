@@ -34,9 +34,6 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install prisma globally to allow running migrations. Pin to v5 to match the project's version.
-RUN npm install -g prisma@5
-
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
@@ -51,17 +48,18 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Copy Prisma schema and generated client needed for migrations and runtime
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+
 USER nextjs
 
 EXPOSE 3000
 
-# Copy Prisma schema and generated client needed for migrations and runtime
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
-COPY --from=builder /app/package.json ./package.json
-
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Run migrations and then start the server
-CMD ["sh", "-c", "prisma migrate deploy && node server.js"]
+# Run migrations and then start the server using the locally copied Prisma
+CMD ["sh", "-c", "node ./node_modules/prisma/build/index.js migrate deploy && node server.js"]
