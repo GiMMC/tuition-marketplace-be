@@ -21,5 +21,19 @@ services:
     ports:
       - "6379:6379"
 
+  api:
+    build:
+      context: .
+      target: runner
+    container_name: tuition_api
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
 volumes:
   pgdata:

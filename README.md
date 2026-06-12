@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tuition Marketplace Backend
 
-## Getting Started
+A robust Next.js (App Router) RESTful backend built for the Tuition Marketplace take-home assignment. It serves as a secure, fast API integrating PostgreSQL, Redis, and Supabase Storage.
 
-First, run the development server:
+## Features
+- **Next.js API Routes** (`/api/*`)
+- **JWT + Redis Session Management**
+- **Supabase Document Uploads & Signed Downloads**
+- **Prisma ORM**
+- **Swagger / OpenAPI Documentation**
+- **Docker Compose & Multi-stage Docker Builds**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 1. Local Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
+- Node.js (v18+)
+- Docker & Docker Compose (for Postgres and Redis)
+- A Supabase Project (for storage bucket)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Setup Instructions
 
-## Learn More
+1. **Clone the Repository** and install dependencies:
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Prepare Environment Variables**:
+   Copy `.env.example` to `.env` (or create a `.env` file) and fill in your values.
+   ```env
+   # Database & Redis (Matches local docker-compose configuration)
+   DATABASE_URL="postgresql://postgres:password@localhost:5432/tuition_db?schema=public"
+   REDIS_URL="redis://localhost:6379"
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   # JWT Config
+   JWT_SECRET="your_super_secret_jwt_key_here"
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   # Supabase Storage Configuration
+   NEXT_PUBLIC_SUPABASE_URL="https://[YOUR-REF].supabase.co"
+   SUPABASE_SERVICE_ROLE_KEY="eyJhbG..."
+   SUPABASE_STORAGE_BUCKET="documents"
+   ```
+   *Note: For the Database URL when running locally OUTSIDE Docker, use `localhost`. When running INSIDE Docker, use the service name `db` (e.g. `postgresql://postgres:password@db:5432...`).*
 
-## Deploy on Vercel
+3. **Start the Infrastructure (DB + Redis)**:
+   ```bash
+   docker compose up db redis -d
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. **Initialize the Database**:
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. **Start the API Development Server**:
+   ```bash
+   npm run dev
+   ```
+
+6. **View Swagger Documentation**:
+   Navigate to [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
+
+---
+
+## 2. Production Deployment (VPS + GitHub Actions)
+
+The repository is configured for seamless CI/CD to a Virtual Private Server (VPS) via GitHub Actions. The pipeline builds the Docker image, pushes it to GitHub Container Registry (ghcr.io), and SSHes into your VPS to deploy it using Docker Compose.
+
+### VPS Preparation
+1. **Provision VPS**: You need an Ubuntu/Debian server with Docker and Docker Compose installed.
+2. **Setup App Directory**: Create a folder on your VPS (e.g., `/opt/tuition-marketplace`).
+3. **Upload Files**: Copy the `docker-compose.yml` and your production `.env` file into that folder. Ensure the `.env` uses the internal Docker network names:
+   ```env
+   DATABASE_URL=postgresql://postgres:password@db:5432/tuition_db?schema=public
+   REDIS_URL=redis://redis:6379
+   ```
+
+### GitHub Secrets Required
+In your GitHub repository settings, configure the following **Actions Secrets**:
+- `VPS_HOST`: The IP address of your VPS.
+- `VPS_USERNAME`: The SSH user (e.g., `root` or `ubuntu`).
+- `VPS_SSH_KEY`: The private SSH key used to access the VPS.
+
+### Deployment Workflow
+The workflow is located in `.github/workflows/deploy.yml`.
+1. Make a commit to the `main` branch.
+2. GitHub Actions will build the `runner` target from the Dockerfile.
+3. The image is published to `ghcr.io/yourusername/tuition-marketplace-be`.
+4. The Action connects to your VPS, pulls the updated image, and runs `docker compose up -d` to restart the containers with zero-downtime recreation.
+
+## Documentation
+For more details on the architecture, data models, and specifications, please refer to the [SPECIFICATION_AND_PLANNING.md](./docs/SPECIFICATION_AND_PLANNING.md).
