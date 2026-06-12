@@ -48,7 +48,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       if (!user.tutorProfile) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
-      const isInvited = caseItem.caseInvitations.some(inv => inv.tutorProfileId === user.tutorProfile!.id);
+      const isInvited = caseItem.caseInvitations.some((inv: any) => inv.tutorProfileId === user.tutorProfile!.id);
       if (!isInvited) {
         // According to requirements, we should avoid leaking existence if they aren't authorized?
         // Actually the prompt says "avoid leaking existence where appropriate — explain your choice".
@@ -100,7 +100,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const parsed = updateCaseSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid data', details: parsed.error.errors }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid data', details: parsed.error.issues }, { status: 400 });
     }
 
     const updatedCase = await prisma.case.update({

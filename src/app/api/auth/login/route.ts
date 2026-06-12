@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     const parsed = loginSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid data', details: parsed.error.errors }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid data', details: parsed.error.issues }, { status: 400 });
     }
 
     const { email, password } = parsed.data;
