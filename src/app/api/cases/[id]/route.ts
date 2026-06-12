@@ -3,6 +3,30 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getUser } from '@/lib/server-auth';
 
+/**
+ * @swagger
+ * /api/cases/{id}:
+ *   get:
+ *     summary: Get a specific tuition case
+ *     description: Fetch details of a tuition case. Only accessible by the Parent who owns it, or a Tutor invited to it.
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Case not found
+ */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser();
@@ -73,6 +97,48 @@ const updateCaseSchema = z.object({
   status: z.enum(['OPEN', 'MATCHED', 'CLOSED']).optional(),
 });
 
+/**
+ * @swagger
+ * /api/cases/{id}:
+ *   patch:
+ *     summary: Update a tuition case
+ *     description: Update details of a tuition case. Only accessible by the Parent who owns it.
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               subject:
+ *                 type: string
+ *               level:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *               budgetPerHour:
+ *                 type: number
+ *               status:
+ *                 type: string
+ *                 enum: [OPEN, IN_PROGRESS, CLOSED]
+ *     responses:
+ *       200:
+ *         description: Case updated successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser();

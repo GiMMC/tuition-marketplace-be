@@ -3,6 +3,40 @@ import { prisma } from '@/lib/prisma';
 import { getUser } from '@/lib/server-auth';
 import { uploadDocumentToStorage } from '@/lib/storage';
 
+/**
+ * @swagger
+ * /api/cases/{id}/documents:
+ *   post:
+ *     summary: Upload a case document
+ *     description: Uploads a document to Supabase and attaches it to a specific case.
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Document uploaded successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Case not found
+ */
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser();
@@ -72,6 +106,30 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
 }
 
+/**
+ * @swagger
+ * /api/cases/{id}/documents:
+ *   get:
+ *     summary: List case documents
+ *     description: Fetch all documents attached to a specific case.
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A list of documents
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Case not found
+ */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser();

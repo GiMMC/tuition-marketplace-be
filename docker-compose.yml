@@ -19,14 +19,14 @@ services:
     container_name: tuition_redis
     restart: always
     ports:
-      - "6379:6379"
+      - "6381:6379"
 
   api:
     image: masegi/tuition-marketplace-be:latest
     container_name: tuition_api
     restart: always
     ports:
-      - "3000:3000"
+      - "5001:3000"
     env_file:
       - .env
     depends_on:

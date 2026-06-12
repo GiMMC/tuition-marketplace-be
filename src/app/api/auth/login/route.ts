@@ -10,6 +10,31 @@ const loginSchema = z.object({
   password: z.string(),
 });
 
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login user
+ *     description: Authenticates a user and returns a session token in a cookie.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       400:
+ *         description: Invalid data
+ *       401:
+ *         description: Invalid credentials
+ */
 export async function POST(req: Request) {
   try {
     const body = await req.json();

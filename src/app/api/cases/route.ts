@@ -11,6 +11,39 @@ const createCaseSchema = z.object({
   budgetPerHour: z.number().optional(),
 });
 
+/**
+ * @swagger
+ * /api/cases:
+ *   post:
+ *     summary: Create a tuition case
+ *     description: Creates a new tuition case. Only accessible by Parents.
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               subject:
+ *                 type: string
+ *               level:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *               budgetPerHour:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Case created successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (only parents can create cases)
+ */
 export async function POST(req: Request) {
   try {
     const user = await getUser();
@@ -49,6 +82,20 @@ export async function POST(req: Request) {
   }
 }
 
+/**
+ * @swagger
+ * /api/cases:
+ *   get:
+ *     summary: Get tuition cases
+ *     description: Returns a list of cases. If user is a Parent, returns only their own cases.
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of cases
+ *       401:
+ *         description: Unauthorized
+ */
 export async function GET(req: Request) {
   try {
     const user = await getUser();

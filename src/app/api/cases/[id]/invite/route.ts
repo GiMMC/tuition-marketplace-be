@@ -7,6 +7,41 @@ const inviteSchema = z.object({
   tutorProfileId: z.string().uuid(),
 });
 
+/**
+ * @swagger
+ * /api/cases/{id}/invite:
+ *   post:
+ *     summary: Invite a tutor to a case
+ *     description: Parents can invite a specific tutor profile to their tuition case.
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               tutorProfileId:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Invitation sent successfully
+ *       400:
+ *         description: Invalid data or already invited
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Case not found
+ */
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser();

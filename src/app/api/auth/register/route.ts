@@ -12,6 +12,34 @@ const registerSchema = z.object({
   displayName: z.string().optional(),
 });
 
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Creates a new user account (Parent or Tutor) and automatically logs them in.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [PARENT, TUTOR]
+ *               displayName:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Registration successful
+ *       400:
+ *         description: Invalid data or email already exists
+ */
 export async function POST(req: Request) {
   try {
     const body = await req.json();

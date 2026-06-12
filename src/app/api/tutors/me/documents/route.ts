@@ -3,6 +3,34 @@ import { prisma } from '@/lib/prisma';
 import { getUser } from '@/lib/server-auth';
 import { uploadDocumentToStorage } from '@/lib/storage';
 
+/**
+ * @swagger
+ * /api/tutors/me/documents:
+ *   post:
+ *     summary: Upload a profile document
+ *     description: Uploads a document to Supabase and attaches it to the logged-in tutor's profile.
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Document uploaded successfully
+ *       400:
+ *         description: No file provided or file too large
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
 export async function POST(req: Request) {
   try {
     const user = await getUser();

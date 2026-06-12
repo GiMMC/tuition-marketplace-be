@@ -2,6 +2,28 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getUser } from '@/lib/server-auth';
 
+/**
+ * @swagger
+ * /api/tutors/{id}:
+ *   get:
+ *     summary: Get a specific tutor profile
+ *     description: Fetch details of a tutor by their ID.
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Tutor not found
+ */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser();

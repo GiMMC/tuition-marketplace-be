@@ -3,6 +3,30 @@ import { prisma } from '@/lib/prisma';
 import { getUser } from '@/lib/server-auth';
 import { generateDownloadUrl } from '@/lib/storage';
 
+/**
+ * @swagger
+ * /api/documents/{id}/download:
+ *   get:
+ *     summary: Generate a signed download URL
+ *     description: Returns a secure, short-lived signed URL to download a document from Supabase.
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Signed URL generated
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Document not found
+ */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getUser();

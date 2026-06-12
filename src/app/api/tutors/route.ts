@@ -3,6 +3,34 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getUser } from '@/lib/server-auth';
 
+/**
+ * @swagger
+ * /api/tutors:
+ *   get:
+ *     summary: List all tutors
+ *     description: Fetch a paginated list of tutors. Optional search parameter for display name.
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search query for tutor displayName
+ *       - in: query
+ *         name: skip
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: take
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       401:
+ *         description: Unauthorized
+ */
 export async function GET(req: Request) {
   try {
     const user = await getUser();
